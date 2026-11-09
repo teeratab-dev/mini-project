@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block content %}
+{% set L = LABELS[category] %}
+{% macro chip(s) %}{% if s == 'Ongoing' %}<span class="px-2.5 py-0.5 text-xs font-semibold bg-pink-600 text-white rounded-full">กำลังแข่ง</span>{% elif s == 'Upcoming' %}<span class="px-2.5 py-0.5 text-xs font-semibold text-cyan-300 border border-cyan-400/60 rounded-full">เร็วๆ นี้</span>{% else %}<span class="px-2.5 py-0.5 text-xs font-semibold text-slate-400 border border-slate-600 rounded-full">จบแล้ว</span>{% endif %}{% endmacro %}
+<div class="space-y-6">
+    <div class="flex flex-wrap items-center justify-between gap-4">
+        <h1 class="font-display text-3xl md:text-4xl text-white"><i class="fa-solid {{ L.icon }} text-pink-400 mr-2 text-2xl"></i>{{ L.th }} <span class="text-slate-500 text-xl">({{ items|length }})</span></h1>
+        <a href="/admin/{{ category }}/add" class="btn-hot cut-sm px-6 py-3 font-semibold gap-2"><i class="fa-solid fa-plus"></i>เพิ่ม{{ L.th }}</a>
+    </div>
+
+    {% if items %}
+    <div class="minimal-card rounded-2xl overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-slate-300 whitespace-nowrap">
+                <thead class="bg-black/30 text-sm text-slate-400 border-b border-[var(--line)]">
+                    <tr>
+                        {% if category == 'teams' %}<th class="p-4">ชื่อทีม</th><th class="p-4">เกม</th><th class="p-4">โค้ช</th>
+                        {% elif category == 'players' %}<th class="p-4">ชื่อในเกม</th><th class="p-4">ชื่อจริง</th><th class="p-4">ตำแหน่ง</th><th class="p-4">ทีม</th>
+                        {% elif category == 'gear' %}<th class="p-4">อุปกรณ์</th><th class="p-4">หมวด</th><th class="p-4">แบรนด์</th><th class="p-4">ผู้ใช้งาน</th>
+                        {% elif category == 'tournaments' %}<th class="p-4">ชื่อรายการ</th><th class="p-4">เกม</th><th class="p-4">เงินรางวัล</th><th class="p-4">สถานะ</th>
+                        {% elif category == 'matches' %}<th class="p-4">รายการแข่ง</th><th class="p-4">คู่แข่ง</th><th class="p-4">สกอร์</th><th class="p-4">ผล</th>
+                        {% endif %}
+                        <th class="p-4 text-right">ลบ</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-[var(--line)]">
+                    {% for item in items %}
+                    <tr class="hover:bg-white/5 transition">
+                        {% if category == 'teams' %}
+                        <td class="p-4 font-semibold text-white">{{ item.name }}</td><td class="p-4">{{ item.game }}</td><td class="p-4">{{ item.coach or '-' }}</td>
+                        {% elif category == 'players' %}
+                        <td class="p-4 font-semibold text-white">{{ item.nickname }}</td><td class="p-4">{{ item.real_name or '-' }}</td><td class="p-4">{{ item.role }}</td><td class="p-4">{{ item.team_name or 'ไร้สังกัด' }}</td>
+                        {% elif category == 'gear' %}
+                        <td class="p-4 font-semibold text-white">{{ item.item_name }}</td><td class="p-4">{{ item.category }}</td><td class="p-4">{{ item.brand }}</td><td class="p-4">{{ item.player_name or 'คลังส่วนกลาง' }}</td>
+                        {% elif category == 'tournaments' %}
+                        <td class="p-4 font-semibold text-white">{{ item.name }}</td><td class="p-4">{{ item.game }}</td><td class="p-4" style="color:var(--gold)">${{ '{:,.0f}'.format(item.prize_pool) }}</td><td class="p-4">{{ chip(item.status) }}</td>
+                        {% elif category == 'matches' %}
+                        <td class="p-4">{{ item.tournament_name or 'กระชับมิตร' }}</td><td class="p-4 font-semibold text-white">vs {{ item.opponent }}</td><td class="p-4">{{ item.score }}</td>
+                        <td class="p-4"><span class="font-semibold {{ 'text-emerald-400' if item.result == 'WIN' else 'text-pink-400' }}">{{ 'ชนะ' if item.result == 'WIN' else 'แพ้' }}</span></td>
+                        {% endif %}
+                        <td class="p-4 text-right">
+                            <form action="/admin/{{ category }}/delete/{{ item.id }}" method="POST" onsubmit="return confirm('ลบรายการนี้ใช่ไหม? ลบแล้วกู้คืนไม่ได้')">
+                                <button type="submit" class="px-3 py-1.5 bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 border border-rose-500/30 rounded-lg text-sm transition"><i class="fa-solid fa-trash mr-1"></i>ลบ</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% else %}
+    <div class="panel cut p-12 text-center space-y-4">
+        <i class="fa-solid {{ L.icon }} text-4xl text-slate-600"></i>
+        <p class="text-slate-300 text-lg">ยังไม่มีข้อมูล{{ L.th }}</p>
+        <a href="/admin/{{ category }}/add" class="btn-hot cut-sm px-6 py-3 font-semibold gap-2"><i class="fa-solid fa-plus"></i>เพิ่ม{{ L.th }}คนแรก</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

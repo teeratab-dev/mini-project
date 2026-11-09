@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block content %}
+{% set icons = {'Mouse': 'fa-computer-mouse', 'Keyboard': 'fa-keyboard', 'Headset': 'fa-headset', 'Monitor': 'fa-desktop'} %}
+<div class="space-y-8">
+    <a href="/teams" class="inline-flex items-center gap-2 text-slate-300 hover:text-white"><i class="fa-solid fa-arrow-left"></i> กลับไปหน้าทีมและนักแข่ง</a>
+
+    <section class="cut p-[2px]" style="background:linear-gradient(135deg,var(--hot),var(--volt))">
+        <div class="cut bg-[#130B26] p-6 md:p-8 flex flex-col md:flex-row md:items-center gap-6">
+            <div class="w-28 h-28 shrink-0 flex items-center justify-center font-display text-5xl text-white cut" style="background:linear-gradient(135deg,var(--hot),#8A2BFF)">
+                {{ player.nickname[:2].upper() }}
+            </div>
+            <div class="flex-1 space-y-3">
+                <div>
+                    <h1 class="font-display text-5xl md:text-6xl text-white leading-none">{{ player.nickname }}</h1>
+                    <div class="text-slate-400 mt-1 text-lg">{{ player.real_name or 'ไม่ระบุชื่อจริง' }}</div>
+                </div>
+                <div class="flex flex-wrap gap-2 text-sm font-semibold">
+                    <span class="px-3 py-1 text-violet-200 bg-violet-500/20 cut-sm"><i class="fa-solid fa-crosshairs mr-1"></i>ตำแหน่ง: {{ player.role }}</span>
+                    {% if player.game %}<span class="px-3 py-1 text-cyan-300 border border-cyan-400/60 cut-sm"><i class="fa-solid fa-gamepad mr-1"></i>{{ player.game }}</span>{% endif %}
+                    <span class="px-3 py-1 text-slate-200 border border-slate-600 cut-sm"><i class="fa-solid fa-shield-halved mr-1"></i>{{ player.team_name or 'ไร้สังกัด' }}</span>
+                </div>
+                {% if player.coach %}<div class="text-sm text-slate-400">โค้ช: <span class="text-slate-200 font-semibold">{{ player.coach }}</span></div>{% endif %}
+            </div>
+        </div>
+    </section>
+
+    <section class="space-y-4">
+        <h2 class="font-display text-3xl text-white">อุปกรณ์ที่ใช้</h2>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {% for g in gear %}
+            <div class="panel cut-sm p-4 space-y-3">
+                <div class="w-11 h-11 flex items-center justify-center text-xl text-cyan-300 bg-cyan-400/10 cut-sm"><i class="fa-solid {{ icons.get(g.category, 'fa-gamepad') }}"></i></div>
+                <div>
+                    <div class="text-sm text-slate-400">{{ g.category }}</div>
+                    <div class="font-semibold text-white text-lg leading-snug">{{ g.item_name }}</div>
+                    <div class="text-sm" style="color:var(--gold)">{{ g.brand }}</div>
+                </div>
+            </div>
+            {% else %}
+            <div class="sm:col-span-2 lg:col-span-4 panel cut-sm p-8 text-center text-slate-400">ยังไม่มีอุปกรณ์ที่ลงทะเบียนไว้ให้นักแข่งคนนี้</div>
+            {% endfor %}
+        </div>
+    </section>
+
+    {% if teammates %}
+    <section class="space-y-4">
+        <h2 class="font-display text-3xl text-white">เพื่อนร่วมทีม</h2>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {% for m in teammates %}
+            <a href="/players/{{ m.id }}" class="panel cut-sm p-4 lift flex items-center justify-between">
+                <div>
+                    <div class="font-semibold text-white text-lg">{{ m.nickname }}</div>
+                    <div class="text-sm text-slate-400">{{ m.role }}</div>
+                </div>
+                <i class="fa-solid fa-chevron-right text-slate-500"></i>
+            </a>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+</div>
+{% endblock %}

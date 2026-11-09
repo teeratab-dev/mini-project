@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block content %}
+{% set cnt = {'all': tournaments|length,
+              'Ongoing': tournaments|selectattr('status','equalto','Ongoing')|list|length,
+              'Upcoming': tournaments|selectattr('status','equalto','Upcoming')|list|length,
+              'Finished': tournaments|selectattr('status','equalto','Finished')|list|length} %}
+<div class="space-y-8">
+    <div class="space-y-4">
+        <div>
+            <h1 class="font-display text-4xl md:text-5xl text-white">รายการแข่งขัน</h1>
+            <p class="text-slate-400 mt-1">กดปุ่มด้านล่างเพื่อเลือกดูตามสถานะ</p>
+        </div>
+        <div class="flex flex-wrap gap-2" id="filters">
+            {% for key, label in [('all','ทั้งหมด'), ('Ongoing','กำลังแข่ง'), ('Upcoming','เร็วๆ นี้'), ('Finished','จบแล้ว')] %}
+            <button data-f="{{ key }}" class="px-5 py-2.5 font-semibold cut-sm border border-[var(--line)] text-slate-300 transition">{{ label }} <span class="opacity-70">({{ cnt[key] }})</span></button>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-6">
+        {% for t in tournaments %}
+        {% set live = t.status == 'Ongoing' %}
+        <article data-status="{{ t.status }}" class="cut p-[2px] {{ 'lift' if live else '' }}" style="background:{{ 'linear-gradient(135deg,var(--hot),var(--volt))' if live else 'var(--line)' }}">
+            <div class="cut bg-[#130B26] p-6 h-full flex flex-col gap-5">
+                <div class="flex items-center justify-between">
+                    {% if live %}
+                    <span class="inline-flex items-center gap-2 px-3 py-1 text-sm font-semibold text-white bg-pink-600 cut-sm"><span class="live-dot w-2 h-2 rounded-full bg-white"></span>กำลังแข่ง</span>
+                    {% elif t.status == 'Upcoming' %}
+                    <span class="px-3 py-1 text-sm font-semibold text-cyan-300 border border-cyan-400/60 cut-sm"><i class="fa-regular fa-clock mr-1"></i>เร็วๆ นี้</span>
+                    {% else %}
+                    <span class="px-3 py-1 text-sm font-semibold text-slate-400 border border-slate-600 cut-sm"><i class="fa-solid fa-flag-checkered mr-1"></i>จบแล้ว</span>
+                    {% endif %}
+                    <span class="text-sm text-slate-400"><i class="fa-solid fa-gamepad mr-1"></i>{{ t.game }}</span>
+                </div>
+
+                <div>
+                    <h2 class="font-display text-2xl text-white leading-tight">{{ t.name }}</h2>
+                    <div class="text-sm text-slate-400 mt-2">เงินรางวัลรวม</div>
+                    <div class="font-display text-5xl" style="color:var(--gold)">${{ '{:,.0f}'.format(t.prize_pool) }}</div>
+                </div>
+
+                <div class="mt-auto space-y-2">
+                    <div class="flex items-center justify-between text-sm text-slate-400">
+                        <span>ผลการแข่ง {{ t.matches|length }} แมตช์</span>
+                        <span><b class="text-emerald-400">ชนะ {{ t.wins }}</b> · <b class="text-pink-400">แพ้ {{ t.losses }}</b></span>
+                    </div>
+                    {% for m in t.matches[:3] %}
+                    <div class="flex items-center justify-between bg-black/30 px-3 py-2 cut-sm" style="border-left:3px solid {{ 'var(--win)' if m.result == 'WIN' else 'var(--hot)' }}">
+                        <span class="text-white font-medium">vs {{ m.opponent }}</span>
+                        <span class="flex items-center gap-3">
+                            <span class="font-display text-lg text-slate-200">{{ m.score }}</span>
+                            <span class="text-xs font-bold {{ 'text-emerald-400' if m.result == 'WIN' else 'text-pink-400' }}">{{ 'ชนะ' if m.result == 'WIN' else 'แพ้' }}</span>
+                        </span>
+                    </div>
+                    {% else %}
+                    <div class="text-sm text-slate-500 border border-dashed border-slate-700 p-3 text-center">ยังไม่มีผลการแข่ง</div>
+                    {% endfor %}
+                    {% if t.matches|length > 3 %}
+                    <details class="group">
+                        <summary class="cursor-pointer text-sm text-cyan-300 py-1 list-none"><i class="fa-solid fa-chevron-down mr-1 text-xs group-open:rotate-180 transition"></i>ดูอีก {{ t.matches|length - 3 }} แมตช์</summary>
+                        <div class="space-y-2 mt-2">
+                            {% for m in t.matches[3:] %}
+                            <div class="flex items-center justify-between bg-black/30 px-3 py-2 cut-sm" style="border-left:3px solid {{ 'var(--win)' if m.result == 'WIN' else 'var(--hot)' }}">
+                                <span class="text-white font-medium">vs {{ m.opponent }}</span>
+                                <span class="flex items-center gap-3"><span class="font-display text-lg text-slate-200">{{ m.score }}</span><span class="text-xs font-bold {{ 'text-emerald-400' if m.result == 'WIN' else 'text-pink-400' }}">{{ 'ชนะ' if m.result == 'WIN' else 'แพ้' }}</span></span>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </details>
+                    {% endif %}
+                </div>
+            </div>
+        </article>
+        {% else %}
+        <div class="md:col-span-2 panel cut p-10 text-center text-slate-400">ยังไม่มีรายการแข่ง รอประกาศเร็วๆ นี้</div>
+        {% endfor %}
+        <div id="empty" class="md:col-span-2 panel cut p-10 text-center text-slate-400" style="display:none">ไม่มีรายการในสถานะนี้</div>
+    </div>
+</div>
+
+<script>
+(function () {
+    var btns = document.querySelectorAll('#filters button'), cards = document.querySelectorAll('[data-status]'), empty = document.getElementById('empty');
+    function set(f) {
+        var shown = 0;
+        btns.forEach(function (b) {
+            var on = b.dataset.f === f;
+            b.style.background = on ? 'var(--hot)' : 'transparent';
+            b.style.color = on ? '#fff' : '';
+            b.style.borderColor = on ? 'var(--hot)' : '';
+        });
+        cards.forEach(function (c) { var ok = (f === 'all' || c.dataset.status === f); c.style.display = ok ? '' : 'none'; if (ok) shown++; });
+        empty.style.display = (shown === 0 && cards.length > 0) ? '' : 'none';
+    }
+    btns.forEach(function (b) { b.addEventListener('click', function () { set(b.dataset.f); }); });
+    set('all');
+})();
+</script>
+{% endblock %}

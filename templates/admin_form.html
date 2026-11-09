@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% macro field(label, name, ph='', req=false, type='text', hint='') %}
+<div>
+    <label for="{{ name }}" class="block font-medium text-slate-200 mb-1.5">{{ label }}{% if req %} <span class="text-pink-400">*</span>{% else %} <span class="text-slate-500 text-sm">(ไม่บังคับ)</span>{% endif %}</label>
+    <input id="{{ name }}" type="{{ type }}" {% if type == 'number' %}step="any" min="0"{% endif %} name="{{ name }}" {% if req %}required{% endif %} class="input" placeholder="{{ ph }}">
+    {% if hint %}<p class="text-sm text-slate-500 mt-1">{{ hint }}</p>{% endif %}
+</div>
+{% endmacro %}
+{% macro choose(label, name, options, empty_text, req=false, hint='') %}
+<div>
+    <label for="{{ name }}" class="block font-medium text-slate-200 mb-1.5">{{ label }}{% if req %} <span class="text-pink-400">*</span>{% else %} <span class="text-slate-500 text-sm">(ไม่บังคับ)</span>{% endif %}</label>
+    <select id="{{ name }}" name="{{ name }}" {% if req %}required{% endif %} class="input">
+        {% if empty_text %}<option value="">{{ empty_text }}</option>{% endif %}
+        {% for v, t in options %}<option value="{{ v }}">{{ t }}</option>{% endfor %}
+    </select>
+    {% if hint %}<p class="text-sm text-slate-500 mt-1">{{ hint }}</p>{% endif %}
+</div>
+{% endmacro %}
+
+{% block content %}
+{% set L = LABELS[category] %}
+<div class="max-w-xl mx-auto space-y-6">
+    <div>
+        <a href="/admin/{{ category }}" class="text-slate-300 hover:text-white"><i class="fa-solid fa-arrow-left mr-1"></i> ยกเลิกและกลับ</a>
+        <h1 class="font-display text-3xl text-white mt-2"><i class="fa-solid {{ L.icon }} text-pink-400 mr-2"></i>เพิ่ม{{ L.th }}</h1>
+        <p class="text-slate-400 text-sm mt-1">ช่องที่มีดาว <span class="text-pink-400">*</span> ต้องกรอก</p>
+    </div>
+
+    <div class="panel cut p-6 md:p-8">
+        <form action="/admin/{{ category }}/add" method="POST" class="space-y-5">
+
+            {% if category == 'teams' %}
+                {{ field('ชื่อทีม', 'name', 'เช่น Sentinels', true) }}
+                {{ field('เกมที่แข่ง', 'game', 'เช่น VALORANT', true) }}
+                {{ field('ชื่อโค้ช', 'coach', 'ชื่อผู้ฝึกสอน') }}
+
+            {% elif category == 'players' %}
+                {{ field('ชื่อในเกม', 'nickname', 'เช่น TenZ', true, hint='ชื่อที่ใช้แสดงบนเว็บ') }}
+                {{ field('ชื่อจริง', 'real_name', 'เช่น Tyson Ngo') }}
+                {{ field('ตำแหน่ง', 'role', 'เช่น Duelist', true) }}
+                {% if not teams %}
+                <div class="p-4 rounded-xl border border-amber-400/40 bg-amber-400/10 text-amber-200 text-sm">ยังไม่มีทีมในระบบ <a href="/admin/teams/add" class="underline font-semibold">เพิ่มทีมก่อน</a> หรือบันทึกแบบไร้สังกัดไปก่อนก็ได้</div>
+                {% endif %}
+                <div>
+                    <label for="team_id" class="block font-medium text-slate-200 mb-1.5">สังกัดทีม <span class="text-slate-500 text-sm">(ไม่บังคับ)</span></label>
+                    <select id="team_id" name="team_id" class="input">
+                        <option value="">ไม่ระบุสังกัด</option>
+                        {% for t in teams %}<option value="{{ t.id }}">{{ t.name }} ({{ t.game }})</option>{% endfor %}
+                    </select>
+                </div>
+
+            {% elif category == 'gear' %}
+                {{ field('ชื่ออุปกรณ์ / รุ่น', 'item_name', 'เช่น G Pro X Superlight 2', true) }}
+                {{ choose('หมวดหมู่', 'category', [('Mouse','เมาส์ (Mouse)'),('Keyboard','คีย์บอร์ด (Keyboard)'),('Headset','หูฟัง (Headset)'),('Monitor','จอ (Monitor)')], '', true) }}
+                {{ field('แบรนด์', 'brand', 'เช่น Logitech', true) }}
+                <div>
+                    <label for="player_id" class="block font-medium text-slate-200 mb-1.5">ใครเป็นคนใช้ <span class="text-slate-500 text-sm">(ไม่บังคับ)</span></label>
+                    <select id="player_id" name="player_id" class="input">
+                        <option value="">ไม่มี (เก็บไว้ที่ส่วนกลาง)</option>
+                        {% for p in players %}<option value="{{ p.id }}">{{ p.nickname }}</option>{% endfor %}
+                    </select>
+                </div>
+
+            {% elif category == 'tournaments' %}
+                {{ field('ชื่อรายการแข่งขัน', 'name', 'เช่น VCT Champions 2026', true) }}
+                {{ field('เกม', 'game', 'เช่น VALORANT', true) }}
+                {{ field('เงินรางวัลรวม (ดอลลาร์)', 'prize_pool', '1000000', true, 'number', 'ใส่เฉพาะตัวเลข ไม่ต้องใส่ , หรือ $') }}
+                {{ choose('สถานะ', 'status', [('Upcoming','เร็วๆ นี้ (ยังไม่เริ่ม)'),('Ongoing','กำลังแข่ง'),('Finished','จบแล้ว')], '', true) }}
+
+            {% elif category == 'matches' %}
+                {% if not tournaments %}
+                <div class="p-4 rounded-xl border border-amber-400/40 bg-amber-400/10 text-amber-200 text-sm">ยังไม่มีรายการแข่ง <a href="/admin/tournaments/add" class="underline font-semibold">เพิ่มรายการแข่งก่อน</a> หรือบันทึกเป็นแมตช์กระชับมิตรก็ได้</div>
+                {% endif %}
+                <div>
+                    <label for="tournament_id" class="block font-medium text-slate-200 mb-1.5">อยู่ในรายการแข่งไหน <span class="text-slate-500 text-sm">(ไม่บังคับ)</span></label>
+                    <select id="tournament_id" name="tournament_id" class="input">
+                        <option value="">ไม่ระบุ (แมตช์กระชับมิตร)</option>
+                        {% for t in tournaments %}<option value="{{ t.id }}">{{ t.name }}</option>{% endfor %}
+                    </select>
+                </div>
+                {{ field('ทีมคู่แข่ง', 'opponent', 'เช่น Paper Rex', true) }}
+                {{ choose('ผลการแข่ง', 'result', [('WIN','ชนะ'),('LOSS','แพ้')], '', true) }}
+                {{ field('สกอร์', 'score', 'เช่น 2 - 1', true) }}
+            {% endif %}
+
+            <div class="pt-2 flex items-center justify-end gap-3">
+                <a href="/admin/{{ category }}" class="px-4 py-2.5 text-slate-300 hover:text-white transition">ยกเลิก</a>
+                <button type="submit" class="btn-hot cut-sm px-7 py-3 font-semibold gap-2"><i class="fa-solid fa-floppy-disk"></i>บันทึก</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

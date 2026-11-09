@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="space-y-8">
+    <div class="flex flex-wrap items-end justify-between gap-4">
+        <div>
+            <h1 class="font-display text-4xl md:text-5xl text-white">ทีมและนักแข่ง</h1>
+            <p class="text-slate-400 mt-1">กดที่ชื่อนักแข่งเพื่อดูโปรไฟล์และอุปกรณ์ที่ใช้</p>
+        </div>
+        <div class="relative w-full md:w-80">
+            <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-500"></i>
+            <input id="q" type="search" class="input pl-11" placeholder="ค้นหาทีมหรือชื่อนักแข่ง...">
+        </div>
+    </div>
+
+    <div class="grid lg:grid-cols-2 gap-6" id="teamGrid">
+        {% for team in teams %}
+        <article data-team class="panel cut p-6 space-y-5">
+            <div class="flex items-center justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <div class="w-14 h-14 flex items-center justify-center font-display text-2xl text-white cut-sm" style="background:linear-gradient(135deg,var(--hot),#8A2BFF)">{{ team.name[:2].upper() }}</div>
+                    <div>
+                        <h2 class="font-display text-2xl text-white leading-none">{{ team.name }}</h2>
+                        <span class="text-sm text-cyan-300"><i class="fa-solid fa-gamepad mr-1"></i>{{ team.game }}</span>
+                    </div>
+                </div>
+                <div class="text-right text-sm text-slate-400">โค้ช<div class="font-semibold text-slate-200">{{ team.coach or 'ไม่ระบุ' }}</div></div>
+            </div>
+
+            <div class="grid gap-2">
+                {% set ns = namespace(has_player=false) %}
+                {% for p in players %}{% if p.team_id == team.id %}
+                {% set ns.has_player = true %}
+                <a href="/players/{{ p.id }}" data-player class="flex items-center justify-between px-4 py-3 bg-black/30 cut-sm hover:bg-white/10 transition" style="border-left:3px solid var(--volt)">
+                    <div>
+                        <div class="font-semibold text-white text-lg">{{ p.nickname }}</div>
+                        <div class="text-sm text-slate-500">{{ p.real_name or '-' }}</div>
+                    </div>
+                    <span class="flex items-center gap-2 text-sm">
+                        <span class="px-3 py-1 font-semibold text-violet-200 bg-violet-500/20 cut-sm">{{ p.role }}</span>
+                        <i class="fa-solid fa-chevron-right text-slate-500"></i>
+                    </span>
+                </a>
+                {% endif %}{% endfor %}
+                {% if not ns.has_player %}
+                <div class="p-4 border border-dashed border-slate-700 text-center text-sm text-slate-500">ทีมนี้ยังไม่มีนักแข่ง</div>
+                {% endif %}
+            </div>
+        </article>
+        {% else %}
+        <div class="lg:col-span-2 panel cut p-12 text-center text-slate-400">ยังไม่มีทีมในระบบ</div>
+        {% endfor %}
+        <div id="empty" class="lg:col-span-2 panel cut p-12 text-center text-slate-400" style="display:none">ไม่พบผลลัพธ์ ลองพิมพ์คำอื่นดูนะ</div>
+    </div>
+</div>
+
+<script>
+(function () {
+    var q = document.getElementById('q'), teams = document.querySelectorAll('[data-team]'), empty = document.getElementById('empty');
+    q.addEventListener('input', function () {
+        var k = q.value.trim().toLowerCase(), shown = 0;
+        teams.forEach(function (t) {
+            var ok = !k || t.textContent.toLowerCase().indexOf(k) > -1;
+            t.style.display = ok ? '' : 'none';
+            if (ok) shown++;
+        });
+        empty.style.display = (shown === 0 && teams.length) ? '' : 'none';
+    });
+})();
+</script>
+{% endblock %}

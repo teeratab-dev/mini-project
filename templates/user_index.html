@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% macro status_chip(s) %}
+    {% if s == 'Ongoing' %}
+    <span class="inline-flex items-center gap-2 px-3 py-1 text-sm font-semibold text-white bg-pink-600 cut-sm"><span class="live-dot w-2 h-2 rounded-full bg-white"></span>กำลังแข่ง</span>
+    {% elif s == 'Upcoming' %}
+    <span class="inline-flex items-center gap-2 px-3 py-1 text-sm font-semibold text-cyan-300 border border-cyan-400/60 cut-sm"><i class="fa-regular fa-clock"></i>เร็วๆ นี้</span>
+    {% else %}
+    <span class="inline-flex items-center gap-2 px-3 py-1 text-sm font-semibold text-slate-400 border border-slate-600 cut-sm"><i class="fa-solid fa-flag-checkered"></i>จบแล้ว</span>
+    {% endif %}
+{% endmacro %}
+
+{% block content %}
+<div class="space-y-12">
+
+    <section class="grid lg:grid-cols-5 gap-8 items-center pt-2">
+        <div class="lg:col-span-3 space-y-5">
+            <h1 class="font-display text-4xl md:text-6xl text-white leading-[1.1]">
+                ตามศึกอีสปอร์ต<br>ได้ง่ายๆ ในที่เดียว
+            </h1>
+            <div class="flex flex-wrap gap-3 pt-1">
+                <a href="/tournaments" class="btn-hot cut-sm px-7 py-3.5 font-semibold text-lg gap-2"><i class="fa-solid fa-trophy"></i>ดูรายการแข่ง</a>
+                <a href="/teams" class="btn-ghost cut-sm px-7 py-3.5 font-semibold text-lg gap-2"><i class="fa-solid fa-users"></i>ดูทีมและนักแข่ง</a>
+            </div>
+        </div>
+
+        <div class="lg:col-span-2">
+            {% if featured %}
+            <a href="/tournaments" class="block cut p-[2px] lift" style="background:linear-gradient(135deg,var(--hot),var(--volt))">
+                <div class="cut bg-[#130B26] p-6 space-y-4">
+                    <div class="flex items-center justify-between">
+                        {{ status_chip(featured.status) }}
+                        <span class="text-sm text-slate-400"><i class="fa-solid fa-gamepad mr-1"></i>{{ featured.game }}</span>
+                    </div>
+                    <h2 class="font-display text-2xl text-white leading-tight">{{ featured.name }}</h2>
+                    <div>
+                        <div class="text-sm text-slate-400">เงินรางวัลรวม</div>
+                        <div class="font-display text-5xl md:text-6xl" style="color:var(--gold)">$<span data-count="{{ featured.prize_pool|int }}">{{ '{:,.0f}'.format(featured.prize_pool) }}</span></div>
+                    </div>
+                    <div class="text-sm text-cyan-300 font-medium">ดูรายละเอียดและผลการแข่ง <i class="fa-solid fa-arrow-right ml-1"></i></div>
+                </div>
+            </a>
+            {% else %}
+            <div class="panel cut p-8 text-center text-slate-400">ยังไม่มีรายการแข่ง รอประกาศเร็วๆ นี้</div>
+            {% endif %}
+        </div>
+    </section>
+
+    <section class="grid md:grid-cols-3 gap-4">
+        {% for href, icon, title, desc, color in [
+            ('/tournaments', 'fa-fire', 'ตอนนี้แข่งอะไรอยู่?', 'ดูรายการที่กำลังแข่งและเงินรางวัล', 'var(--hot)'),
+            ('/teams', 'fa-shield-halved', 'มีทีมและนักแข่งใครบ้าง?', 'ดูรายชื่อทีม แล้วกดชื่อนักแข่งเพื่อดูโปรไฟล์', 'var(--volt)'),
+            ('#results', 'fa-flag-checkered', 'ล่าสุดใครชนะ?', 'เลื่อนลงดูผลการแข่งล่าสุด', 'var(--win)')] %}
+        <a href="{{ href }}" class="panel cut-sm p-5 lift flex items-center gap-4">
+            <span class="w-12 h-12 shrink-0 flex items-center justify-center text-xl cut-sm" style="background:{{ color }}22;color:{{ color }}"><i class="fa-solid {{ icon }}"></i></span>
+            <span>
+                <span class="block font-semibold text-white text-lg leading-snug">{{ title }}</span>
+                <span class="block text-sm text-slate-400">{{ desc }}</span>
+            </span>
+        </a>
+        {% endfor %}
+    </section>
+
+    <section class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {% for n, label, color in [(counts.teams, 'ทีมทั้งหมด', 'var(--volt)'), (counts.players, 'นักแข่งทั้งหมด', '#B58CFF'), (counts.tournaments, 'รายการแข่งทั้งหมด', 'var(--gold)'), (counts.wins, 'ครั้งที่ชนะรวม', 'var(--win)')] %}
+        <div class="panel cut-sm p-4">
+            <div class="font-display text-4xl" style="color:{{ color }}">{{ n }}</div>
+            <div class="text-sm text-slate-400">{{ label }}</div>
+        </div>
+        {% endfor %}
+    </section>
+
+    {% if tournaments %}
+    <section class="space-y-4">
+        <div class="flex items-end justify-between">
+            <h2 class="font-display text-3xl text-white">รายการแข่งอื่นๆ</h2>
+            <a href="/tournaments" class="text-cyan-300 hover:underline">ดูทั้งหมด</a>
+        </div>
+        <div class="grid md:grid-cols-3 gap-5">
+            {% for t in tournaments %}
+            <a href="/tournaments" class="panel cut p-5 lift block space-y-4">
+                <div class="flex items-center justify-between">{{ status_chip(t.status) }}<span class="text-sm text-slate-400">{{ t.game }}</span></div>
+                <h3 class="font-display text-xl text-white leading-snug">{{ t.name }}</h3>
+                <div>
+                    <div class="text-xs text-slate-500">เงินรางวัล</div>
+                    <div class="font-display text-3xl" style="color:var(--gold)">${{ '{:,.0f}'.format(t.prize_pool) }}</div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <section id="results" class="space-y-4 scroll-mt-24">
+        <h2 class="font-display text-3xl text-white">ผลการแข่งล่าสุด</h2>
+        <div class="space-y-2.5">
+            {% for m in matches %}
+            {% set win = m.result == 'WIN' %}
+            <div class="panel cut-sm flex items-center gap-4 pr-4" style="border-left:4px solid {{ 'var(--win)' if win else 'var(--hot)' }}">
+                <div class="flex-1 py-3 pl-4">
+                    <div class="font-semibold text-white text-lg">vs {{ m.opponent }}</div>
+                    <div class="text-sm text-slate-400">{{ m.tournament_name or 'แมตช์กระชับมิตร' }}</div>
+                </div>
+                <div class="font-display text-2xl text-white">{{ m.score }}</div>
+                <span class="w-16 text-center py-1 text-sm font-bold cut-sm {{ 'bg-emerald-400 text-emerald-950' if win else 'bg-pink-600 text-white' }}">{{ 'ชนะ' if win else 'แพ้' }}</span>
+            </div>
+            {% else %}
+            <div class="panel cut-sm p-8 text-center text-slate-400">ยังไม่มีผลการแข่ง</div>
+            {% endfor %}
+        </div>
+    </section>
+</div>
+
+<script>
+(function () {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    document.querySelectorAll('[data-count]').forEach(function (el) {
+        var end = +el.dataset.count, t0 = performance.now(), dur = 1200;
+        (function tick(t) {
+            var p = Math.min((t - t0) / dur, 1), e = 1 - Math.pow(1 - p, 3);
+            el.textContent = Math.round(end * e).toLocaleString('en-US');
+            if (p < 1) requestAnimationFrame(tick);
+        })(t0);
+    });
+})();
+</script>
+{% endblock %}

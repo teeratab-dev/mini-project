@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="space-y-8">
+    <div>
+        <h1 class="font-display text-4xl text-white">ผู้ดูแลระบบ</h1>
+        <p class="text-slate-400 mt-1">จัดการข้อมูลที่แสดงบนเว็บ เลือกหมวดที่ต้องการ แล้วกด “เพิ่ม” ได้เลย</p>
+    </div>
+
+    <div class="minimal-card cut-sm p-5 flex gap-4 items-start">
+        <i class="fa-solid fa-lightbulb text-amber-300 text-xl mt-1"></i>
+        <div class="text-slate-300">
+            <div class="font-semibold text-white mb-1">แนะนำลำดับการเพิ่มข้อมูล</div>
+            <span class="text-cyan-300">ทีม</span> → <span class="text-cyan-300">นักแข่ง</span> → <span class="text-cyan-300">อุปกรณ์</span>
+            <span class="mx-2 text-slate-600">|</span>
+            <span class="text-cyan-300">รายการแข่ง</span> → <span class="text-cyan-300">ผลการแข่ง</span>
+            <div class="text-sm text-slate-400 mt-1">เพราะนักแข่งต้องเลือกทีม และผลการแข่งต้องเลือกรายการแข่งที่มีอยู่แล้ว</div>
+        </div>
+    </div>
+
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+        {% for key, desc, unit, n in [
+            ('teams', 'ชื่อทีม เกมที่แข่ง และโค้ช', 'ทีม', counts.teams),
+            ('players', 'รายชื่อนักแข่งและทีมที่สังกัด', 'คน', counts.players),
+            ('gear', 'เมาส์ คีย์บอร์ด หูฟัง และจอ', 'ชิ้น', counts.gear),
+            ('tournaments', 'ชื่อรายการ เงินรางวัล และสถานะ', 'รายการ', counts.tournaments),
+            ('matches', 'คู่แข่ง สกอร์ และผลแพ้ชนะ', 'แมตช์', counts.matches)] %}
+        <div class="panel cut p-6 flex flex-col gap-4">
+            <div class="flex items-center justify-between">
+                <span class="w-12 h-12 flex items-center justify-center text-2xl text-pink-400 bg-pink-500/10 cut-sm"><i class="fa-solid {{ LABELS[key].icon }}"></i></span>
+                <span class="text-sm text-slate-300"><b class="font-display text-2xl text-white">{{ n }}</b> {{ unit }}</span>
+            </div>
+            <div>
+                <h3 class="font-semibold text-xl text-white">{{ LABELS[key].th }}</h3>
+                <p class="text-sm text-slate-400">{{ desc }}</p>
+            </div>
+            <div class="flex gap-2 mt-auto">
+                <a href="/admin/{{ key }}/add" class="btn-hot cut-sm flex-1 py-2.5 font-semibold gap-2"><i class="fa-solid fa-plus"></i>เพิ่ม</a>
+                <a href="/admin/{{ key }}" class="btn-ghost cut-sm flex-1 py-2.5 font-semibold gap-2"><i class="fa-solid fa-list"></i>ดูทั้งหมด</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="th" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-SPORTS HUB</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,300;0,400;0,500;0,600;0,700;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --ink: #0A0614; --panel: #130B26; --line: #2A1B4D;
+            --hot: #FF2E88; --volt: #22E4FF; --gold: #FFE14D; --win: #3DFF9A;
+        }
+        html { font-size: 17px; }
+        body {
+            font-family: 'Kanit', sans-serif;
+            background-color: var(--ink);
+            background-image:
+                radial-gradient(ellipse 60% 40% at 85% -5%, rgba(255,46,136,.28), transparent 70%),
+                radial-gradient(ellipse 50% 40% at 0% 30%, rgba(34,228,255,.14), transparent 70%),
+                repeating-linear-gradient(115deg, rgba(255,255,255,.025) 0 1px, transparent 1px 28px);
+            background-attachment: fixed;
+        }
+        .font-display { font-family: 'Kanit', sans-serif; font-style: italic; font-weight: 800; letter-spacing: -.01em; }
+
+        .cut    { clip-path: polygon(0 0, calc(100% - 22px) 0, 100% 22px, 100% 100%, 22px 100%, 0 calc(100% - 22px)); }
+        .cut-sm { clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px)); }
+
+        .panel { background: linear-gradient(160deg, #1a1033 0%, var(--panel) 60%); border: 1px solid var(--line); }
+        .minimal-card { background: var(--panel); border: 1px solid var(--line); }
+        .glass-panel { background: rgba(19,11,38,.88); border: 1px solid var(--line); backdrop-filter: blur(12px); }
+
+        .lift { transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease; }
+        .lift:hover { transform: translateY(-4px); border-color: var(--hot); box-shadow: 0 14px 34px -14px rgba(255,46,136,.6); }
+
+        .btn-hot { background: var(--hot); color: #fff; display: inline-flex; align-items: center; justify-content: center; transition: box-shadow .2s, transform .2s; }
+        .btn-hot:hover { transform: translateY(-2px); box-shadow: 0 10px 30px -8px rgba(255,46,136,.8); }
+        .btn-ghost { border: 1px solid var(--volt); color: var(--volt); display: inline-flex; align-items: center; justify-content: center; transition: background .2s; }
+        .btn-ghost:hover { background: rgba(34,228,255,.1); }
+
+        .input { width: 100%; background: #0d0720; border: 1px solid var(--line); border-radius: .75rem; padding: .8rem 1rem; color: #fff; font-size: 1rem; }
+        .input::placeholder { color: #64607a; }
+        .input:focus { border-color: var(--volt); outline: none; box-shadow: 0 0 0 3px rgba(34,228,255,.18); }
+        select.input option { background: #130B26; }
+
+        .live-dot { animation: pulse 1.2s ease-in-out infinite; }
+        @keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(255,46,136,.8);} 50% { box-shadow: 0 0 0 7px rgba(255,46,136,0);} }
+
+        a:focus-visible, button:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+        @media (prefers-reduced-motion: reduce) { .live-dot { animation: none; } .lift, .btn-hot { transition: none; } }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; } ::-webkit-scrollbar-track { background: var(--ink); }
+        ::-webkit-scrollbar-thumb { background: var(--line); border-radius: 9999px; }
+    </style>
+</head>
+<body class="text-slate-200 min-h-screen flex flex-col selection:bg-pink-500 selection:text-white">
+    {% set admin = request.path.startswith('/admin') %}
+
+    <header class="sticky top-0 z-50 glass-panel border-x-0 border-t-0">
+        <div class="max-w-7xl mx-auto px-5 h-16 flex items-center justify-between gap-4">
+            <a href="/" class="flex items-center gap-2.5">
+                <span class="w-9 h-9 flex items-center justify-center text-white cut-sm" style="background:linear-gradient(135deg,var(--hot),#8A2BFF)"><i class="fa-solid fa-bolt"></i></span>
+                <span class="font-display text-2xl text-white leading-none">E-Sport</span>
+            </a>
+
+            {% if not admin %}
+            <nav class="hidden md:flex items-center gap-1 font-medium">
+                {% for href, label, icon in [('/', 'หน้าแรก', 'fa-house'), ('/tournaments', 'รายการแข่ง', 'fa-trophy'), ('/teams', 'ทีมและนักแข่ง', 'fa-users')] %}
+                {% set on = (request.path == '/') if href == '/' else (request.path.startswith(href) or (href == '/teams' and request.path.startswith('/players'))) %}
+                <a href="{{ href }}" class="px-4 py-2 rounded-lg transition flex items-center gap-2 {% if on %}text-white bg-white/10{% else %}text-slate-400 hover:text-white{% endif %}">
+                    <i class="fa-solid {{ icon }} text-sm"></i>{{ label }}
+                </a>
+                {% endfor %}
+            </nav>
+            <a href="/admin" class="text-sm text-slate-400 hover:text-white flex items-center gap-2 px-3 py-2"><i class="fa-solid fa-gear"></i><span class="hidden sm:inline">ผู้ดูแลระบบ</span></a>
+            {% else %}
+            <span class="text-sm font-semibold text-amber-300 flex items-center gap-2"><i class="fa-solid fa-screwdriver-wrench"></i>โหมดผู้ดูแลระบบ</span>
+            <a href="/" class="btn-ghost px-4 py-2 rounded-lg text-sm font-semibold gap-2"><i class="fa-solid fa-arrow-left"></i>กลับหน้าเว็บ</a>
+            {% endif %}
+        </div>
+
+        {% if admin %}
+        <nav class="border-t border-white/5 overflow-x-auto">
+            <div class="max-w-7xl mx-auto px-5 flex gap-1 py-2 whitespace-nowrap text-sm font-medium">
+                {% for href, label, icon in [('/admin', 'ภาพรวม', 'fa-gauge'), ('/admin/teams', 'ทีม', 'fa-shield-halved'), ('/admin/players', 'นักแข่ง', 'fa-users'), ('/admin/gear', 'อุปกรณ์', 'fa-headset'), ('/admin/tournaments', 'รายการแข่ง', 'fa-trophy'), ('/admin/matches', 'ผลการแข่ง', 'fa-crosshairs')] %}
+                {% set on = (request.path == '/admin') if href == '/admin' else request.path.startswith(href) %}
+                <a href="{{ href }}" class="px-4 py-2 rounded-lg flex items-center gap-2 {% if on %}bg-amber-400 text-black font-semibold{% else %}text-slate-300 hover:bg-white/10{% endif %}"><i class="fa-solid {{ icon }} text-xs"></i>{{ label }}</a>
+                {% endfor %}
+            </div>
+        </nav>
+        {% endif %}
+    </header>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto px-5 py-8 pb-28 md:pb-10">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="mb-6 flex items-center gap-3 px-5 py-4 rounded-xl border border-emerald-400/40 bg-emerald-400/10 text-emerald-300 font-medium">
+            <i class="fa-solid fa-circle-check"></i>{{ messages[0] }}
+        </div>
+        {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </main>
+
+    {% if not admin %}
+    <nav class="md:hidden fixed bottom-0 inset-x-0 z-50 glass-panel border-x-0 border-b-0 grid grid-cols-3">
+        {% for href, label, icon in [('/', 'หน้าแรก', 'fa-house'), ('/tournaments', 'รายการแข่ง', 'fa-trophy'), ('/teams', 'ทีม', 'fa-users')] %}
+        {% set on = (request.path == '/') if href == '/' else (request.path.startswith(href) or (href == '/teams' and request.path.startswith('/players'))) %}
+        <a href="{{ href }}" class="py-3 flex flex-col items-center gap-1 text-xs font-medium {% if on %}text-pink-400{% else %}text-slate-400{% endif %}">
+            <i class="fa-solid {{ icon }} text-lg"></i>{{ label }}
+        </a>
+        {% endfor %}
+    </nav>
+    {% endif %}
+
+    <footer class="border-t border-white/5 py-6 text-sm text-slate-500 hidden md:block">
+        <div class="max-w-7xl mx-auto px-5 flex justify-between"><span>© 2026 e-sports by shiryx </span></div>
+    </footer>
+</body>
+</html>
