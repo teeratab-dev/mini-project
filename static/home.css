@@ -1,0 +1,143 @@
+.home-page { display: grid; gap: 1.25rem; }
+
+/* ---------- hero ---------- */
+.home-hero {
+    position: relative;
+    overflow: hidden;
+    display: grid;
+    align-items: center;
+    min-height: clamp(26rem, 44vw, 34rem);
+    padding: clamp(1.4rem, 4.5vw, 3.7rem);
+    border-radius: 1.75rem;
+    box-shadow: var(--shadow-pop);
+}
+.home-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(90deg, #070914 0%, #070914f0 30%, #0a0f2255 62%, #070b1a12 100%),
+        linear-gradient(0deg, #070914cc, transparent 55%),
+        url("esports-arena.webp") 70% 48% / cover no-repeat;
+}
+.home-hero::after {
+    content: "";
+    position: absolute; left: 6%; right: 6%; bottom: -1px; height: 2px; border-radius: 2px;
+    background: linear-gradient(90deg, transparent, #8b5cf6, #22d3ee, transparent);
+}
+.home-hero-content { position: relative; z-index: 1; width: min(100%, 34rem); }
+.home-title {
+    margin-top: .9rem;
+    color: #fff;
+    font-size: clamp(2.4rem, 6.2vw, 4.4rem);
+    line-height: 1.02;
+    letter-spacing: .01em;
+    text-wrap: balance;
+}
+.home-intro p { max-width: 27rem; margin-top: .9rem; color: #c9d1e8; font-size: clamp(.95rem, 1.5vw, 1.08rem); }
+.home-actions { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: 1.5rem; }
+.home-actions a { display: inline-flex; align-items: center; gap: .55rem; min-height: 2.8rem; padding: .6rem 1.15rem; font-weight: 600; font-size: .95rem; }
+
+/* featured tournament card sits on the hero */
+.home-feature {
+    display: grid;
+    gap: .6rem;
+    margin-top: clamp(1.5rem, 3vw, 2.3rem);
+    padding: 1rem 1.1rem;
+    border: 1px solid #ffffff22;
+    border-radius: 1rem;
+    background: #0b1022cc;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    transition: border-color .2s, background-color .2s, transform .2s;
+}
+.home-feature:hover { border-color: #a78bfa; background: #11183199; transform: translateY(-2px); }
+.home-feature-label { color: var(--gold); font-size: .72rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; }
+.home-feature-label::before { content: "★ "; }
+.home-feature-meta, .home-feature-foot, .home-event-meta { display: flex; align-items: center; justify-content: space-between; gap: .55rem; }
+.home-feature-meta, .home-event-meta { color: #b5bfd9; font-size: .78rem; }
+.home-feature h2 { color: #fff; font-family: 'Chakra Petch', 'IBM Plex Sans Thai', sans-serif; font-size: clamp(1.2rem, 2.2vw, 1.55rem); font-weight: 700; line-height: 1.18; overflow-wrap: anywhere; }
+.home-feature-foot { border-top: 1px solid #ffffff1f; padding-top: .6rem; }
+.home-feature-foot div { display: grid; color: #aab4cf; font-size: .8rem; }
+.home-feature-foot strong { color: var(--gold); font-family: 'Chakra Petch', sans-serif; font-size: 1.3rem; font-variant-numeric: tabular-nums; }
+.home-feature-foot > i { display: grid; place-items: center; width: 2.1rem; height: 2.1rem; border-radius: 50%; background: var(--grad); color: #fff; font-size: .8rem; }
+
+/* status chip (shared by featured + list) */
+.home-status { --status: #aab4cf; display: inline-flex; align-items: center; flex-shrink: 0; gap: .4rem; padding: .15rem .6rem; border: 1px solid color-mix(in srgb, var(--status) 38%, transparent); border-radius: 999px; background: color-mix(in srgb, var(--status) 12%, transparent); color: var(--status); font-size: .74rem; font-weight: 500; }
+.home-status[data-home-status="Ongoing"] { --status: #fb7185; }
+.home-status[data-home-status="Upcoming"] { --status: #67e8f9; }
+.home-status span { width: .4rem; height: .4rem; border-radius: 50%; background: currentColor; }
+.home-status[data-home-status="Ongoing"] span { animation: pulse 1.4s ease-in-out infinite; }
+
+/* ---------- stats ---------- */
+.home-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .8rem; }
+.home-stat {
+    --accent: #67e8f9;
+    position: relative; overflow: hidden;
+    display: flex; align-items: center; gap: .9rem; padding: 1rem 1.1rem;
+    border: 1px solid transparent; border-radius: 1.1rem;
+    background: var(--card-bg);
+    transition: transform .2s;
+}
+.home-stat:hover { transform: translateY(-3px); }
+.home-stat::after { /* soft colored glow in the corner */
+    content: ""; position: absolute; right: -2rem; top: -2rem; width: 6rem; height: 6rem; border-radius: 50%;
+    background: radial-gradient(circle, color-mix(in srgb, var(--accent) 28%, transparent), transparent 70%); pointer-events: none;
+}
+.home-stat[data-accent="violet"] { --accent: #a78bfa; }
+.home-stat[data-accent="gold"] { --accent: #fbbf24; }
+.home-stat[data-accent="green"] { --accent: #34d399; }
+.home-stat i { display: grid; place-items: center; width: 2.6rem; height: 2.6rem; flex-shrink: 0; border-radius: .85rem; background: color-mix(in srgb, var(--accent) 16%, transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent); color: var(--accent); font-size: 1.05rem; }
+.home-stat dt { color: var(--muted); font-size: .78rem; }
+.home-stat dd { color: #fff; font-family: 'Chakra Petch', sans-serif; font-size: 1.85rem; line-height: 1.1; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+/* ---------- panels ---------- */
+.home-content { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr); gap: 1rem; align-items: start; }
+.home-content-single { grid-template-columns: minmax(0, 1fr); }
+.home-panel { min-width: 0; border: 1px solid transparent; border-radius: 1.2rem; background: var(--card-bg); box-shadow: 0 1.2rem 2.5rem -1.6rem #000; }
+.home-panel-head { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: .4rem 1rem; padding: 1rem 1.15rem; border-bottom: 1px solid var(--line-soft); }
+.home-panel-head h2 { display: flex; align-items: center; gap: .6rem; color: #fff; font-family: 'Chakra Petch', 'IBM Plex Sans Thai', sans-serif; font-size: 1.2rem; font-weight: 700; }
+.home-panel-head h2::before { content: ""; width: .28rem; height: 1.1rem; border-radius: 3px; background: var(--grad); }
+.home-panel-head a { color: var(--secondary); font-size: .84rem; font-weight: 500; }
+.home-panel-head a:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+.home-feed { padding: .4rem .7rem .6rem; }
+.home-feed li + li { border-top: 1px solid var(--line-soft); }
+.home-match { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: .75rem; padding: .8rem .4rem; }
+.home-match-name { display: grid; gap: .15rem; overflow-wrap: anywhere; }
+.home-match-name strong, .home-event strong { color: #f1f4fc; font-size: .95rem; font-weight: 500; }
+.home-match-name span { color: var(--faint); font-size: .78rem; }
+.home-score { color: #fff; font-family: 'Chakra Petch', sans-serif; font-size: 1.05rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+.home-outcome { min-width: 2.6rem; border-radius: .45rem; padding: .18rem .45rem; background: #fb71851c; color: #fda4af; font-size: .74rem; font-weight: 600; text-align: center; }
+.home-outcome[data-win="true"] { background: #34d3991c; color: #6ee7b7; }
+.home-event { display: grid; gap: .3rem; padding: .8rem .4rem; overflow-wrap: anywhere; transition: background-color .2s; border-radius: .6rem; }
+.home-event:hover { background: #ffffff08; }
+.home-event:hover strong { color: var(--accent-hover); }
+.home-event-prize { color: var(--gold); font-family: 'Chakra Petch', sans-serif; font-size: .9rem; font-weight: 600; }
+.home-empty { padding: 1.2rem .4rem; color: var(--muted); }
+
+/* featured teams chips */
+.home-teams { display: grid; gap: .6rem; padding: .85rem; }
+.home-team-link { display: flex; align-items: center; gap: .75rem; padding: .7rem .8rem; border: 1px solid var(--line); border-radius: .9rem; background: #ffffff05; transition: border-color .2s, background-color .2s, transform .2s; }
+.home-team-link:hover { border-color: #8b5cf6; background: #8b5cf614; transform: translateY(-2px); }
+.home-team-badge { display: grid; place-items: center; width: 2.4rem; height: 2.4rem; flex-shrink: 0; border-radius: .7rem; font-family: 'Chakra Petch', sans-serif; font-weight: 700; color: var(--accent-hover); background: linear-gradient(145deg, #8b5cf633, #22d3ee14); box-shadow: inset 0 0 0 1px #a78bfa40; }
+
+@media (max-width: 900px) {
+    .home-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 760px) {
+    .home-content { grid-template-columns: minmax(0, 1fr); }
+    .home-hero { min-height: 0; border-radius: 1.4rem; }
+    .home-hero::before {
+        background:
+            linear-gradient(0deg, #070914 8%, #070914d0 58%, #0a0f2255 100%),
+            url("esports-arena.webp") 68% 40% / cover no-repeat;
+    }
+    .home-hero-content { padding-top: 5rem; }
+    .home-stat dd { font-size: 1.5rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .home-feature, .home-team-link { transition: none; }
+    .home-feature:hover, .home-team-link:hover { transform: none; }
+    .home-status[data-home-status="Ongoing"] span { animation: none; }
+}

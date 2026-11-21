@@ -1,0 +1,24 @@
+<dialog data-image-dialog aria-labelledby="image-dialog-title" class="site-dialog">
+    <div class="site-dialog-header">
+        <div class="min-w-0">
+            <h2 id="image-dialog-title" class="site-dialog-title" lang="en">Edit {{ L.en_singular }} Image</h2>
+            <p data-image-item-name class="site-dialog-name"></p>
+        </div>
+        <button type="button" data-image-close aria-label="ปิด" class="site-dialog-close">
+            <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+        </button>
+    </div>
+
+    <form method="POST">
+        <div class="site-dialog-body">
+            {% with editing_image=true %}
+                {% include "image_field.html" %}
+            {% endwith %}
+        </div>
+        <div class="site-dialog-footer">
+            <button type="button" data-image-close autofocus class="btn-ghost px-4 py-2 text-sm">ยกเลิก</button>
+            <button type="submit" class="btn-hot px-5 py-2 text-sm font-semibold">บันทึกรูป</button>
+        </div>
+    </form>
+    <form id="delete-image-form" method="POST"></form>
+</dialog>

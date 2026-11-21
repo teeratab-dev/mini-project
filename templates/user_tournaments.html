@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% from "banner.html" import banner_art %}
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='tournaments.css') }}">
+{% endblock %}
+{% macro match_row(match) %}
+<li class="match-row" data-result="{{ match.result }}">
+    <span class="match-opponent"><span class="text-slate-400">พบ</span> {{ match.opponent }}</span>
+    <span class="match-score">{{ match.score }}</span>
+    <span class="match-outcome">{{ 'ชนะ' if match.result == 'WIN' else 'แพ้' }}</span>
+</li>
+{% endmacro %}
+{% block content %}
+{% set filters = [('all','ทั้งหมด'), ('Ongoing','กำลังแข่ง'), ('Upcoming','เร็ว ๆ นี้'), ('Finished','จบแล้ว')] %}
+{% set status_labels = dict(filters) %}
+<section class="tournaments-page" aria-labelledby="tournament-title">
+    <header class="tournament-banner theme-banner photo-banner" {{ banner_art('tournaments') }}>
+        <div>
+            <span lang="en" class="eyebrow mb-3">Live &amp; Upcoming</span>
+            <h1 id="tournament-title" class="font-display" lang="en">Tournaments</h1>
+            <p>ติดตามรายการแข่งและดูผลการแข่งขัน</p>
+        </div>
+    </header>
+
+    <div class="tournament-toolbar" role="group" aria-label="กรองรายการตามสถานะ">
+        {% for key, label in filters %}
+        {% set count = tournaments|length if key == 'all' else tournaments|selectattr('status','equalto',key)|list|length %}
+        <button type="button" data-filter="{{ key }}" aria-pressed="{{ 'true' if key == 'all' else 'false' }}" aria-controls="tournament-grid">
+            {{ label }} <span>{{ count }}</span>
+        </button>
+        {% endfor %}
+    </div>
+
+    <div id="tournament-grid" class="tournament-grid">
+        {% for tournament in tournaments %}
+        <article id="tournament-{{ tournament.id }}" data-tournament-status="{{ tournament.status }}" class="tournament-card">
+            <div class="tournament-card-meta">
+                <span class="tournament-game"><i class="fa-solid fa-gamepad" aria-hidden="true"></i>{{ tournament.game }}</span>
+                <span class="tournament-status"><span aria-hidden="true"></span>{{ status_labels.get(tournament.status, 'จบแล้ว') }}</span>
+            </div>
+            <div class="tournament-card-heading">
+                <h2>{{ tournament.name }}</h2>
+                <div class="tournament-prize">
+                    <span>เงินรางวัลรวม</span>
+                    <strong>${{ '{:,.0f}'.format(tournament.prize_pool) }}</strong>
+                </div>
+            </div>
+            <div class="tournament-card-results">
+                <div class="tournament-results-heading">
+                    <h3>ผลการแข่งขัน <span>· {{ tournament.matches|length }} แมตช์</span></h3>
+                    {% if tournament.matches %}
+                    <span><b class="text-emerald-300">ชนะ {{ tournament.wins }}</b> <b class="text-rose-300">แพ้ {{ tournament.losses }}</b></span>
+                    {% endif %}
+                </div>
+                {% if tournament.matches %}
+                <ul class="tournament-matches">
+                    {% for match in tournament.matches[:3] %}{{ match_row(match) }}{% endfor %}
+                </ul>
+                {% else %}
+                <p class="tournament-no-matches">ยังไม่มีผลการแข่ง</p>
+                {% endif %}
+                {% if tournament.matches|length > 3 %}
+                <details class="tournament-more">
+                    <summary>ดูอีก {{ tournament.matches|length - 3 }} แมตช์</summary>
+                    <ul class="tournament-matches">
+                        {% for match in tournament.matches[3:] %}{{ match_row(match) }}{% endfor %}
+                    </ul>
+                </details>
+                {% endif %}
+            </div>
+        </article>
+        {% else %}
+        <p class="tournament-empty">ยังไม่มีรายการแข่ง</p>
+        {% endfor %}
+        {% if tournaments %}
+        <p class="tournament-empty" data-tournament-empty role="status" hidden>ไม่มีรายการในสถานะนี้</p>
+        {% endif %}
+    </div>
+</section>
+
+<script>
+(() => {
+    const filters = document.querySelectorAll('[data-filter]');
+    const cards = document.querySelectorAll('[data-tournament-status]');
+    const empty = document.querySelector('[data-tournament-empty]');
+    filters.forEach((button) => {
+        button.addEventListener('click', () => {
+            filters.forEach((filter) => filter.setAttribute('aria-pressed', String(filter === button)));
+            let visible = 0;
+            cards.forEach((card) => {
+                card.hidden = button.dataset.filter !== 'all'
+                    && card.dataset.tournamentStatus !== button.dataset.filter;
+                if (!card.hidden) visible++;
+            });
+            if (empty) empty.hidden = visible > 0;
+        });
+    });
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,17 @@
+<dialog data-record-dialog aria-labelledby="record-dialog-title" aria-describedby="record-dialog-description" class="site-dialog">
+    <div class="site-dialog-header">
+        <h2 id="record-dialog-title" class="site-dialog-title">ลบ{{ L.th }}</h2>
+        <button type="button" data-record-close aria-label="ปิด" class="site-dialog-close">
+            <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+        </button>
+    </div>
+    <div class="site-dialog-body">
+        <p data-record-target class="break-words font-semibold text-white"></p>
+        <p id="record-dialog-description" class="mt-1 text-sm text-slate-300">เมื่อลบรายการนี้แล้ว จะกู้คืนไม่ได้</p>
+    </div>
+    <form method="dialog" class="site-dialog-footer">
+        <button type="submit" value="cancel" autofocus class="btn-ghost px-4 py-2 text-sm">ยกเลิก</button>
+        <button type="submit" value="delete" class="btn-hot site-dialog-danger px-5 py-2 text-sm font-semibold">ลบรายการ</button>
+    </form>
+</dialog>
+<script src="{{ url_for('static', filename='record-dialog.js') }}" defer></script>

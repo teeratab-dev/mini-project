@@ -1,0 +1,3 @@
+{% macro banner_art(scene) -%}
+style="--banner-art: url('{{ url_for('static', filename='banners/' ~ scene ~ '.webp') }}')"
+{%- endmacro %}

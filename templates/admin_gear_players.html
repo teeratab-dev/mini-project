@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% from "banner.html" import banner_art %}
+{% block content %}
+<header class="theme-banner page-heading photo-banner photo-banner-admin mb-6" {{ banner_art('admin') }}>
+    <a class="text-sm text-cyan-200" href="{{ url_for('admin_list', category='gear') }}">กลับรายการอุปกรณ์</a>
+    <h1 class="font-display text-3xl text-white mt-2" lang="en">Gear Users</h1>
+    <p>{{ item.item_name }}</p>
+</header>
+<form method="post" class="panel mx-auto max-w-3xl p-5 space-y-4">
+    <fieldset>
+        <legend class="mb-3 font-semibold text-white">เลือกนักแข่งที่ใช้อุปกรณ์รุ่นนี้</legend>
+        <div class="grid gap-2 sm:grid-cols-2">
+        {% for player in players %}
+            <label class="flex items-center gap-3 rounded-lg border border-white/10 p-3">
+                <input type="checkbox" name="player_id" value="{{ player.id }}"{% if player.selected %} checked{% endif %}>
+                <span>{{ player.nickname }}{% if player.team_name %}<span class="block text-xs text-slate-400">{{ player.team_name }}</span>{% endif %}</span>
+            </label>
+        {% else %}
+            <p class="text-slate-400">ยังไม่มีนักแข่งในระบบ</p>
+        {% endfor %}
+        </div>
+    </fieldset>
+    <button class="btn-hot px-5 py-2.5 font-semibold" type="submit">บันทึกผู้ใช้งาน</button>
+</form>
+{% endblock %}

@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
+{% endblock %}
+{% macro status_chip(status) %}
+<span class="home-status" data-home-status="{{ status }}"><span aria-hidden="true"></span>{{ {'Ongoing': 'กำลังแข่ง', 'Upcoming': 'เร็ว ๆ นี้'}.get(status, 'จบแล้ว') }}</span>
+{% endmacro %}
+
+{% block content %}
+<div class="home-page">
+    <section class="home-hero theme-banner">
+        <div class="home-hero-content">
+            <div class="home-intro">
+                <span lang="en" class="eyebrow">Esports Season 2026</span>
+                <h1 lang="en" class="home-title font-display">E-Sports <span class="text-grad">Hub</span></h1>
+                <p>ติดตามผลแข่ง รายการสำคัญ และอุปกรณ์ที่นักแข่งใช้</p>
+                <div class="home-actions">
+                    <a class="btn-hot" href="{{ url_for('user_tournaments') }}"><i class="fa-solid fa-trophy" aria-hidden="true"></i>ดูรายการแข่ง</a>
+                    <a class="btn-ghost" href="{{ url_for('user_teams') }}"><i class="fa-solid fa-users" aria-hidden="true"></i>ดูทีมและนักแข่ง</a>
+                </div>
+            </div>
+            {% if featured %}
+            <a class="home-feature" href="{{ url_for('user_tournaments', _anchor='tournament-' ~ featured.id) }}">
+                <div class="home-feature-meta">
+                    <span lang="en" class="home-feature-label">Featured Tournament</span>
+                    {{ status_chip(featured.status) }}
+                </div>
+                <h2>{{ featured.name }}</h2>
+                <div class="home-feature-foot">
+                    <div><span>{{ featured.game }} <span aria-hidden="true">·</span> เงินรางวัลรวม</span><strong>${{ '{:,.0f}'.format(featured.prize_pool) }}</strong></div>
+                    <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+                </div>
+            </a>
+            {% endif %}
+        </div>
+    </section>
+
+    <dl class="home-stats">
+        {% for count, label, icon, color in [
+            (counts.teams, 'ทีมทั้งหมด', 'fa-shield-halved', 'cyan'),
+            (counts.players, 'นักแข่งทั้งหมด', 'fa-users', 'violet'),
+            (counts.tournaments, 'รายการแข่งทั้งหมด', 'fa-trophy', 'gold'),
+            (counts.wins, 'ครั้งที่ชนะรวม', 'fa-flag-checkered', 'green')] %}
+        <div class="home-stat" data-accent="{{ color }}">
+            <i class="fa-solid {{ icon }}" aria-hidden="true"></i>
+            <div><dt>{{ label }}</dt><dd>{{ count }}</dd></div>
+        </div>
+        {% endfor %}
+    </dl>
+
+    {% if featured_teams %}
+    <section class="home-panel" aria-labelledby="home-teams-title">
+        <div class="home-panel-head">
+            <h2 id="home-teams-title" lang="en">PUBG 2026 Teams</h2>
+            <a href="{{ url_for('user_teams') }}">ดูทีมทั้งหมด</a>
+        </div>
+        <ul class="home-teams sm:grid-cols-3">
+            {% for team in featured_teams %}
+            <li><a class="home-team-link" href="{{ url_for('user_teams', _anchor='team-' ~ team.id) }}">
+                <span class="home-team-badge" aria-hidden="true">{{ team.name[:2].upper() }}</span>
+                <span class="min-w-0">
+                    <strong class="block truncate text-white">{{ team.name }}</strong>
+                    <span lang="en" class="text-sm text-violet-300">Season {{ team.season }}</span>
+                </span>
+            </a></li>
+            {% endfor %}
+        </ul>
+    </section>
+    {% endif %}
+
+    <div class="home-content{% if not tournaments %} home-content-single{% endif %}">
+        <section id="results" class="home-panel" aria-labelledby="home-results-title">
+            <div class="home-panel-head">
+                <h2 id="home-results-title" lang="en">Latest Results</h2>
+                <a href="{{ url_for('user_tournaments') }}">รายการแข่ง <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+            </div>
+            <ul class="home-feed">
+                {% for match in matches %}
+                {% set win = match.result == 'WIN' %}
+                <li class="home-match">
+                    <div class="home-match-name"><strong>พบ {{ match.opponent }}</strong><span>{{ match.tournament_name or 'แมตช์กระชับมิตร' }}</span></div>
+                    <span class="home-score">{{ match.score }}</span>
+                    <span class="home-outcome" data-win="{{ 'true' if win else 'false' }}">{{ 'ชนะ' if win else 'แพ้' }}</span>
+                </li>
+                {% else %}
+                <li class="home-empty">ยังไม่มีผลการแข่ง</li>
+                {% endfor %}
+            </ul>
+        </section>
+
+        {% if tournaments %}
+        <section class="home-panel" aria-labelledby="home-events-title">
+            <div class="home-panel-head">
+                <h2 id="home-events-title" lang="en">More Tournaments</h2>
+                <a href="{{ url_for('user_tournaments') }}">ดูทั้งหมด <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+            </div>
+            <ul class="home-feed">
+                {% for tournament in tournaments %}
+                <li>
+                    <a class="home-event" href="{{ url_for('user_tournaments', _anchor='tournament-' ~ tournament.id) }}">
+                        <span class="home-event-meta"><span>{{ tournament.game }}</span>{{ status_chip(tournament.status) }}</span>
+                        <strong>{{ tournament.name }}</strong>
+                        <span class="home-event-prize">${{ '{:,.0f}'.format(tournament.prize_pool) }}</span>
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+        </section>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

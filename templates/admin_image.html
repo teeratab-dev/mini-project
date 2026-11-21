@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% from "banner.html" import banner_art %}
+{% block content %}
+{% set L = LABELS[category] %}
+<div class="space-y-6">
+    <div class="theme-banner page-heading photo-banner photo-banner-admin space-y-2" {{ banner_art('admin') }}>
+        <a href="{{ url_for('admin_list', category=category) }}" class="text-slate-300 hover:text-white"><i class="fa-solid fa-arrow-left mr-1"></i> กลับไปรายการ{{ L.th }}</a>
+        <h1 class="font-display text-3xl text-white" lang="en">{{ 'Edit' if item.has_image else 'Add' }} {{ L.en_singular }} Image</h1>
+    </div>
+    <form method="POST" class="panel max-w-xl mx-auto p-6 md:p-8 space-y-5">
+        <p class="font-semibold text-white">{{ item.name }}</p>
+        {% include "image_field.html" %}
+        <div class="flex flex-wrap items-center justify-end gap-2">
+            <button type="submit" class="btn-hot px-7 py-3 font-semibold">บันทึกรูป</button>
+        </div>
+    </form>
+    {% if item.has_image %}
+    <form id="delete-image-form" method="POST"></form>
+    {% endif %}
+</div>
+{% endblock %}

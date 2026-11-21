@@ -1,0 +1,23 @@
+<div data-image-picker data-preview-url="{{ url_for('admin_image_preview') }}" data-saved-url="{{ item.image_url if item and item.image_url else '' }}">
+    <div class="mb-2 font-medium text-slate-200">รูป{{ L.th }}{% if not item and not editing_image %} <span class="text-sm text-slate-400">(ไม่บังคับ)</span>{% endif %}</div>
+    {% set current_url = (item.image_src or url_for('item_image', category=category, item_id=item.id)) if item and item.has_image else '' %}
+    <div class="relative">
+        <div class="image-picker-frame">
+            <span class="image-picker-stage">
+                <span data-image-placeholder {% if current_url %}hidden{% endif %}>
+                    <span class="image-picker-icon" aria-hidden="true"><i class="fa-regular fa-image"></i></span>
+                </span>
+                <img data-image-preview {% if current_url %}src="{{ current_url }}"{% else %}hidden{% endif %} alt="ตัวอย่างรูป{{ L.th }}" referrerpolicy="no-referrer" class="absolute inset-0 h-full w-full object-contain p-5">
+            </span>
+        </div>
+        {% if editing_image or (item and item.has_image) %}
+            {% include "image_delete_button.html" %}
+        {% endif %}
+    </div>
+    <label for="image_url" class="mt-3 mb-1.5 block text-sm font-medium text-slate-300"><i class="fa-solid fa-link mr-1.5 text-violet-300" aria-hidden="true"></i>ลิงก์รูป</label>
+    <input id="image_url" name="image_url" type="url" inputmode="url" maxlength="2048" autocomplete="off" spellcheck="false" placeholder="https://example.com/photo.png" aria-describedby="image-hint image-status" {% if item or editing_image %}required{% endif %} class="input" value="{{ request.form.get('image_url') or (item.image_url if item and item.image_url else '') }}">
+    <p id="image-hint" class="mt-1.5 text-xs text-slate-500">วางลิงก์รูป JPG, PNG หรือ WebP (ไม่เกิน 5 MB) ระบบจะลบพื้นหลังสีขาวให้อัตโนมัติ</p>
+    <p id="image-status" role="status" class="mt-2 text-sm text-slate-300 empty:hidden"></p>
+</div>
+
+<script src="{{ url_for('static', filename='image-preview.js') }}" defer></script>

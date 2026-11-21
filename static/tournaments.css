@@ -1,0 +1,90 @@
+.tournament-banner h1 { font-size: clamp(2.3rem, 5.4vw, 4.2rem); }
+.tournament-banner p { margin-top: .55rem; }
+
+/* ---------- filter pills ---------- */
+.tournament-toolbar { display: flex; flex-wrap: wrap; gap: .5rem; margin-block: 1.5rem; }
+.tournament-toolbar button {
+    display: inline-flex;
+    align-items: center;
+    gap: .55rem;
+    min-height: 2.6rem;
+    padding: .4rem .9rem .4rem 1rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: #0e1220;
+    color: #c3cbe2;
+    font-size: .92rem;
+    font-weight: 500;
+    transition: border-color .2s, background-color .2s, color .2s;
+}
+.tournament-toolbar button span { min-width: 1.5rem; padding: .05rem .45rem; border-radius: 999px; background: #ffffff12; font-family: 'Chakra Petch', sans-serif; font-size: .76rem; text-align: center; }
+.tournament-toolbar button:hover { border-color: #8b5cf6; color: #fff; }
+.tournament-toolbar button[aria-pressed="true"] { border-color: transparent; background: var(--grad); color: #fff; box-shadow: 0 .6rem 1.4rem -.8rem #6366f1; }
+.tournament-toolbar button[aria-pressed="true"] span { background: #ffffff2e; }
+
+/* ---------- cards ---------- */
+.tournament-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.1rem; }
+.tournament-card {
+    --status-color: #aab4cf;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid transparent;
+    border-radius: 1.25rem;
+    background: var(--card-bg);
+    box-shadow: 0 1.2rem 2.5rem -1.6rem #000;
+    transition: box-shadow .25s, transform .2s;
+}
+.tournament-card::before { /* colored status stripe along the top */
+    content: ""; position: absolute; inset: 0 0 auto 0; height: 3px; background: var(--status-color); opacity: .85;
+}
+.tournament-card:hover { transform: translateY(-3px); box-shadow: 0 1.6rem 3rem -1.4rem color-mix(in srgb, var(--status-color) 55%, #000); }
+.tournament-card[data-tournament-status="Ongoing"] { --status-color: #fb7185; }
+.tournament-card[data-tournament-status="Upcoming"] { --status-color: #67e8f9; }
+.tournament-card[data-tournament-status="Finished"] { --status-color: #64708f; }
+.tournament-card-meta, .tournament-card-heading { padding-inline: 1.25rem; }
+.tournament-card-meta { display: flex; align-items: center; justify-content: space-between; gap: .6rem; padding-top: 1.2rem; font-size: .8rem; }
+.tournament-game, .tournament-status { display: inline-flex; align-items: center; gap: .45rem; }
+.tournament-game { color: #b5bfd9; }
+.tournament-game i { color: var(--accent); }
+.tournament-status { flex-shrink: 0; border: 1px solid color-mix(in srgb, var(--status-color) 40%, transparent); border-radius: 999px; background: color-mix(in srgb, var(--status-color) 12%, transparent); padding: .16rem .65rem; color: var(--status-color); font-weight: 500; }
+.tournament-status span { width: .4rem; height: .4rem; border-radius: 50%; background: currentColor; }
+.tournament-card[data-tournament-status="Ongoing"] .tournament-status span { animation: pulse 1.4s ease-in-out infinite; }
+.tournament-card-heading { display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: .7rem 1rem; padding-block: 1rem 1.2rem; }
+.tournament-card-heading h2 { flex: 1 1 11rem; color: #fff; font-family: 'Chakra Petch', 'IBM Plex Sans Thai', sans-serif; font-size: clamp(1.25rem, 2vw, 1.6rem); line-height: 1.18; font-weight: 700; overflow-wrap: anywhere; }
+.tournament-prize { display: grid; color: var(--faint); font-size: .74rem; text-align: right; }
+.tournament-prize strong { color: var(--gold); font-family: 'Chakra Petch', sans-serif; font-size: 1.45rem; line-height: 1.1; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+/* ---------- results ---------- */
+.tournament-card-results { margin-top: auto; padding: .9rem 1.25rem 1.1rem; border-top: 1px solid var(--line-soft); background: #05071260; }
+.tournament-results-heading { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: .35rem .65rem; margin-bottom: .7rem; font-size: .8rem; }
+.tournament-results-heading h3 { color: #e6ebf8; font-weight: 600; }
+.tournament-results-heading h3 span { color: var(--faint); font-weight: 400; }
+.tournament-results-heading b + b { margin-left: .5rem; }
+.tournament-matches { display: grid; gap: .4rem; }
+.match-row { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: .65rem; padding: .55rem .75rem .55rem .9rem; border-radius: .65rem; background: #ffffff08; }
+.match-row::before { content: ""; position: absolute; left: 0; top: .4rem; bottom: .4rem; width: 3px; border-radius: 3px; background: #fb7185; }
+.match-row[data-result="WIN"]::before { background: #34d399; }
+.match-opponent { color: #edf1fb; font-size: .88rem; overflow-wrap: anywhere; }
+.match-score { color: #fff; font-family: 'Chakra Petch', sans-serif; font-weight: 600; font-size: .95rem; font-variant-numeric: tabular-nums; }
+.match-outcome { border-radius: .4rem; padding: .14rem .45rem; font-size: .72rem; font-weight: 600; background: #fb71851c; color: #fda4af; }
+.match-row[data-result="WIN"] .match-outcome { background: #34d3991c; color: #6ee7b7; }
+.tournament-no-matches { color: var(--faint); font-size: .85rem; }
+.tournament-more { margin-top: .7rem; color: var(--secondary); font-size: .85rem; }
+.tournament-more summary { cursor: pointer; }
+.tournament-more summary:hover { text-decoration: underline; text-underline-offset: 3px; }
+.tournament-more summary:focus-visible { outline: 2px solid var(--volt); outline-offset: 3px; }
+.tournament-more .tournament-matches { margin-top: .55rem; }
+.tournament-empty { grid-column: 1 / -1; padding: 2.5rem 1rem; border: 1px dashed #343f66; border-radius: 1rem; color: var(--muted); text-align: center; }
+.tournaments-page [hidden] { display: none; }
+@media (max-width: 760px) {
+    .tournament-grid { grid-template-columns: minmax(0, 1fr); }
+}
+.tournament-card { scroll-margin-top: 5rem; }
+.tournament-card:target { outline: 2px solid var(--accent); outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) {
+    .tournament-card, .tournament-toolbar button { transition: none; }
+    .tournament-card:hover { transform: none; }
+    .tournament-card[data-tournament-status="Ongoing"] .tournament-status span { animation: none; }
+}

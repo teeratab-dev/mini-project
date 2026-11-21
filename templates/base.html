@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="th" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#070914">
+    <title>E-SPORTS HUB</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            /* surfaces */
+            --ink: #070914; --panel: #0e1220; --surface-raised: #141a2e; --line: #232b45; --line-soft: #ffffff14;
+            /* text */
+            --text: #e9edf8; --muted: #9aa5c0; --faint: #6c7794;
+            /* brand */
+            --accent: #a78bfa; --accent-hover: #c4b5fd; --accent-ink: #0d0720;
+            --secondary: #67e8f9; --brand-a: #8b5cf6; --brand-b: #3b82f6;
+            --grad: linear-gradient(135deg, #8b5cf6 0%, #6366f1 45%, #22d3ee 130%);
+            /* state */
+            --hot: #fb7185; --volt: #67e8f9; --gold: #fbbf24; --win: #34d399; --loss: #fb7185;
+            --radius-panel: 1.15rem; --radius-control: .75rem;
+            --shadow-pop: 0 1.25rem 3rem -1rem #02030a;
+            /* card = soft fill + gradient hairline border */
+            --card-bg: linear-gradient(160deg, #151c33, #0e1220 60%) padding-box,
+                       linear-gradient(150deg, #46539a 0%, #1d2441 32%, #232a52 68%, #5b47c4 100%) border-box;
+        }
+        html { font-size: 17px; scroll-behavior: smooth; }
+        body {
+            font-family: 'IBM Plex Sans Thai', 'Kanit', system-ui, sans-serif;
+            isolation: isolate;
+            color: var(--text);
+            background-color: var(--ink);
+            background-image:
+                radial-gradient(60rem 28rem at 50% -8rem, rgba(99,102,241,.22), transparent 70%),
+                radial-gradient(34rem 26rem at 100% 12%, rgba(34,211,238,.09), transparent 70%),
+                radial-gradient(30rem 24rem at 0% 55%, rgba(139,92,246,.10), transparent 70%);
+            background-attachment: fixed;
+            -webkit-font-smoothing: antialiased;
+        }
+        /* faint blueprint grid that fades out toward the bottom of the viewport */
+        body::before {
+            content: "";
+            position: fixed; inset: 0; z-index: -1; pointer-events: none;
+            background-image:
+                linear-gradient(#ffffff07 1px, transparent 1px),
+                linear-gradient(90deg, #ffffff07 1px, transparent 1px);
+            background-size: 44px 44px;
+            -webkit-mask-image: linear-gradient(180deg, #000 0%, transparent 70%);
+                    mask-image: linear-gradient(180deg, #000 0%, transparent 70%);
+        }
+        .font-display { font-family: 'Chakra Petch', 'IBM Plex Sans Thai', sans-serif; font-weight: 700; letter-spacing: .005em; }
+        .num { font-family: 'Chakra Petch', sans-serif; font-variant-numeric: tabular-nums; }
+        .text-grad {
+            background: linear-gradient(100deg, #a78bfa 0%, #60a5fa 35%, #22d3ee 60%, #a78bfa 100%); background-size: 220% 100%;
+            -webkit-background-clip: text; background-clip: text; color: transparent;
+            animation: shimmer 7s linear infinite;
+        }
+        @keyframes shimmer { to { background-position: -220% 0; } }
+        @keyframes rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+        /* staggered entrance for the main blocks of every page */
+        main > div > *, .tournaments-page > *, .tournament-card, #teamGrid > article, .home-page > * {
+            animation: rise .65s cubic-bezier(.2,.7,.2,1) backwards; /* backwards: don't pin transform, hover lifts still work */
+        }
+        main > div > :nth-child(2), .tournaments-page > :nth-child(2), .home-page > :nth-child(2) { animation-delay: .07s; }
+        main > div > :nth-child(3), .tournaments-page > :nth-child(3), .home-page > :nth-child(3) { animation-delay: .14s; }
+        main > div > :nth-child(4), .home-page > :nth-child(4) { animation-delay: .21s; }
+        main > div > :nth-child(n+5), .home-page > :nth-child(n+5) { animation-delay: .28s; }
+        .tournament-card:nth-child(even) { animation-delay: .08s; }
+        #teamGrid > article:nth-child(even) { animation-delay: .08s; }
+        /* hairline shine used under section headings */
+        .rule-glow { height: 1px; background: linear-gradient(90deg, transparent, #7c6cf0aa, #22d3ee88, transparent); }
+        .eyebrow {
+            display: inline-flex; align-items: center; gap: .5rem;
+            color: var(--secondary); font-family: 'Chakra Petch', sans-serif; font-size: .78rem; font-weight: 600;
+            letter-spacing: .18em; text-transform: uppercase;
+        }
+        .eyebrow::before { content: ""; width: 1.6rem; height: 2px; border-radius: 2px; background: var(--grad); }
+
+        /* ---------- header ---------- */
+        .site-header { background: #080b17d9; backdrop-filter: blur(16px) saturate(140%); -webkit-backdrop-filter: blur(16px) saturate(140%); border-bottom: 1px solid var(--line-soft); }
+        .brand-mark {
+            display: grid; place-items: center; width: 2.3rem; height: 2.3rem; border-radius: .7rem;
+            background: var(--grad); color: #fff; box-shadow: 0 .5rem 1.4rem -.4rem #6366f1aa, inset 0 1px 0 #ffffff55;
+        }
+        .brand-word { font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 1.4rem; letter-spacing: .06em; color: #fff; line-height: 1; text-transform: uppercase; }
+        .brand-word b { font-weight: 700; color: var(--secondary); }
+        .nav-pill { display: flex; align-items: center; gap: .15rem; padding: .25rem; border: 1px solid var(--line-soft); border-radius: 999px; background: #ffffff08; }
+        .nav-link { display: inline-flex; align-items: center; gap: .5rem; padding: .45rem 1rem; border-radius: 999px; color: var(--muted); font-size: .92rem; font-weight: 500; transition: color .2s, background-color .2s; }
+        .nav-link:hover { color: #fff; }
+        .nav-current { background: #ffffff14; color: #fff; box-shadow: inset 0 0 0 1px #ffffff1c; }
+        .nav-current i { color: var(--secondary); }
+        .admin-tabs a { transition: background-color .2s, color .2s; }
+
+        /* ---------- banners ---------- */
+        .theme-banner {
+            position: relative;
+            border: 1px solid var(--line);
+            border-radius: 1.5rem;
+            background: radial-gradient(ellipse at 100% 0, #3a2a7a, transparent 60%), radial-gradient(ellipse at 0 100%, #0d3550, transparent 55%), #10142a;
+        }
+        .page-heading { padding: clamp(1rem, 3vw, 1.75rem); }
+        .photo-banner {
+            display: grid; align-content: center; justify-items: start;
+            min-height: clamp(13rem, 24vw, 20rem);
+            padding: clamp(1.4rem, 4.4vw, 3.2rem);
+            overflow: hidden;
+            border-color: #34406a;
+            background:
+                linear-gradient(90deg, #070914 0%, #070914ee 24%, #080b1a8a 52%, #0a0f2214 82%),
+                linear-gradient(0deg, #070914aa, transparent 48%),
+                var(--banner-art, none) 69% 52% / cover no-repeat,
+                #0e1226;
+            box-shadow: var(--shadow-pop);
+        }
+        .photo-banner::after { /* thin gradient edge on the lower border */
+            content: ""; position: absolute; left: 8%; right: 8%; bottom: -1px; height: 2px; border-radius: 2px;
+            background: linear-gradient(90deg, transparent, #8b5cf6, #22d3ee, transparent); opacity: .85;
+        }
+        .photo-banner > * { position: relative; z-index: 1; }
+        .photo-banner-admin { min-height: clamp(10.5rem, 18vw, 14rem); }
+        .photo-banner h1 { color: #fff; line-height: 1.08; text-wrap: balance; font-family: 'Chakra Petch', 'IBM Plex Sans Thai', sans-serif; font-weight: 700; }
+        .photo-banner p { max-width: 34rem; color: #c3cbe2; }
+        .photo-banner h1 i { color: var(--secondary); }
+        .profile-banner { background-position: center, center, 72% 48%; }
+        @media (max-width: 640px) {
+            .photo-banner {
+                align-content: end; min-height: 13.5rem;
+                background:
+                    linear-gradient(90deg, #070914e8, #080b1a70 65%, #0a0f2230),
+                    linear-gradient(0deg, #070914 0%, #070914a0 46%, transparent 86%),
+                    var(--banner-art, none) 72% center / cover no-repeat,
+                    #0e1226;
+            }
+            .photo-banner-admin { min-height: 10.5rem; }
+            .profile-banner { min-height: 16rem; }
+        }
+        .theme-icon { color: var(--accent-hover); background: linear-gradient(145deg, #8b5cf633, #22d3ee14); box-shadow: inset 0 0 0 1px #a78bfa40; }
+
+        /* ---------- surfaces ---------- */
+        .panel, .minimal-card { border: 1px solid var(--line); border-radius: var(--radius-panel); }
+        .panel { border-color: transparent; background: var(--card-bg); box-shadow: 0 1.2rem 2.5rem -1.6rem #000; }
+        .minimal-card { background: var(--panel); }
+        .glass-panel { background: #0a0d1bef; border: 1px solid var(--line-soft); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+        .lift { transition: border-color .2s, transform .2s, background-color .2s; }
+        .lift:hover { border-color: #6d5bd0; transform: translateY(-2px); }
+
+        /* ---------- buttons & inputs ---------- */
+        .btn-hot, .btn-ghost {
+            display: inline-flex; align-items: center; justify-content: center;
+            border: 1px solid transparent; border-radius: var(--radius-control);
+            transition: background-color .2s, border-color .2s, transform .15s, box-shadow .2s, filter .2s;
+        }
+        .btn-hot { background: var(--grad); color: #fff; box-shadow: 0 .6rem 1.4rem -.7rem #6366f1, inset 0 1px 0 #ffffff40; }
+        .btn-hot:hover { filter: brightness(1.12); box-shadow: 0 .8rem 1.8rem -.7rem #818cf8, inset 0 1px 0 #ffffff55; }
+        .btn-hot:active { transform: translateY(1px); }
+        .btn-ghost { border-color: #ffffff26; color: #e7ecfa; background: #ffffff08; }
+        .btn-ghost:hover { border-color: #a78bfa; background: #a78bfa14; }
+        .input {
+            width: 100%; background: #0a0e1c; border: 1px solid var(--line);
+            border-radius: var(--radius-control); padding: .8rem 1rem; color: #fff; font-size: 1rem;
+            transition: border-color .2s, box-shadow .2s;
+        }
+        .input::placeholder { color: #66718f; }
+        .input:hover { border-color: #384369; }
+        .input:focus { border-color: var(--secondary); outline: none; box-shadow: 0 0 0 3px rgba(103,232,249,.16); }
+        select.input option { background: var(--panel); }
+        input[type="checkbox"] { accent-color: #8b5cf6; width: 1.05rem; height: 1.05rem; }
+
+        /* ---------- dialogs ---------- */
+        .site-dialog {
+            width: min(32rem, calc(100% - 1.5rem));
+            max-height: calc(100vh - 1.5rem); max-height: calc(100dvh - 1.5rem);
+            margin: auto; padding: 0; overflow: auto; overscroll-behavior: contain;
+            border: 1px solid #38426b; border-radius: 1.25rem;
+            background: linear-gradient(160deg, #151b33, #0d1121 70%);
+            color: var(--text);
+            box-shadow: 0 1.75rem 5rem #02030aee, 0 0 0 1px #ffffff08 inset;
+        }
+        .site-dialog[open] { animation: dialog-enter .18s ease-out; }
+        .site-dialog::backdrop { background: #04060fcf; backdrop-filter: blur(5px); }
+        .site-dialog-header, .site-dialog-footer { display: flex; align-items: center; justify-content: space-between; gap: .75rem; padding: .95rem 1.2rem; }
+        .site-dialog-header { border-bottom: 1px solid var(--line-soft); background: #ffffff05; }
+        .site-dialog-title { color: #fff; font-family: 'Chakra Petch', 'IBM Plex Sans Thai', sans-serif; font-size: 1.2rem; line-height: 1.2; font-weight: 700; }
+        .site-dialog-name { margin-top: .3rem; color: var(--muted); font-size: .84rem; overflow-wrap: anywhere; }
+        .site-dialog-body { padding: 1.05rem 1.2rem; }
+        .site-dialog-footer { flex-wrap: wrap; justify-content: flex-end; border-top: 1px solid var(--line-soft); }
+        .site-dialog-close { display: grid; flex-shrink: 0; place-items: center; width: 2.3rem; height: 2.3rem; border: 1px solid #ffffff22; border-radius: .65rem; color: #dfe6fa; transition: background-color .2s; }
+        .site-dialog-close:hover { background: #ffffff14; }
+        .site-dialog-danger { background: linear-gradient(135deg, #fb7185, #e11d48); color: #fff; box-shadow: 0 .6rem 1.4rem -.7rem #e11d48; }
+        .site-dialog-danger:hover { filter: brightness(1.1); }
+        @keyframes dialog-enter { from { opacity: 0; transform: translateY(.4rem) scale(.985); } to { opacity: 1; transform: none; } }
+
+        /* ---------- image picker (hooks used by image-preview.js) ---------- */
+        .image-picker-frame {
+            display: block; position: relative; overflow: hidden;
+            border: 1px solid #323c63; border-radius: 1.1rem;
+            transition: border-color .2s, box-shadow .2s;
+        }
+        .image-picker-frame:hover, .image-picker-frame[data-dragging] { border-color: #8b5cf6; box-shadow: 0 0 0 4px #8b5cf61f; }
+        .image-picker-frame:focus-within { outline: 2px solid var(--volt); outline-offset: 3px; }
+        .image-picker-stage {
+            display: grid; place-items: center; position: relative; min-height: clamp(10rem, 30vw, 14rem);
+            background: radial-gradient(ellipse at center, #4a3a9a55, transparent 72%),
+                repeating-conic-gradient(#131930 0% 25%, #0e1224 0% 50%) 50% / 26px 26px;
+        }
+        .image-picker-icon {
+            display: grid; place-items: center; width: 4rem; height: 4rem;
+            border: 1px solid #8b5cf655; border-radius: 1.1rem;
+            background: linear-gradient(145deg, #2a2468, #151a38); color: #e2dcff; font-size: 1.6rem;
+            box-shadow: 0 8px 24px #04061080;
+        }
+        .image-picker-bar { display: flex; align-items: center; justify-content: space-between; gap: .75rem; padding: .75rem; border-top: 1px solid var(--line-soft); background: #0a0e1d; }
+        .image-picker-action {
+            display: inline-flex; align-items: center; gap: .5rem; flex-shrink: 0; padding: .55rem .9rem;
+            border-radius: .7rem; background: var(--grad); color: #fff; font-size: .875rem; font-weight: 600;
+            box-shadow: inset 0 1px 0 #ffffff40;
+        }
+
+        /* ---------- misc ---------- */
+        .live-dot { animation: pulse 1.4s ease-in-out infinite; }
+        @keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(251,113,133,.7);} 50% { box-shadow: 0 0 0 7px rgba(251,113,133,0);} }
+        a:focus-visible, button:focus-visible { outline: 2px solid var(--volt); outline-offset: 3px; }
+        @media (prefers-reduced-motion: reduce) {
+            html { scroll-behavior: auto; }
+            .live-dot { animation: none; } .lift, .btn-hot, .btn-ghost, .nav-link { transition: none; }
+            .lift:hover { transform: none; } .site-dialog[open] { animation: none; }
+            .text-grad, main > div > *, .tournaments-page > *, .tournament-card, #teamGrid > article, .home-page > * { animation: none !important; }
+        }
+        /* ---------- teams / players ---------- */
+        .team-badge {
+            display: grid; place-items: center; flex-shrink: 0; width: 3.7rem; height: 3.7rem; border-radius: 1.05rem;
+            color: #fff; background: var(--grad); box-shadow: 0 .8rem 1.6rem -.8rem #6366f1, inset 0 1px 0 #ffffff55;
+            text-shadow: 0 1px 6px #0006;
+        }
+        .team-coach { padding: .4rem .75rem; border: 1px solid var(--line-soft); border-radius: .8rem; background: #ffffff06; }
+        .player-row { transition: border-color .2s, background-color .2s, transform .2s; }
+        .player-row:hover { border-color: #8b5cf666; }
+        .player-link { position: relative; }
+        .player-link::before { content: ""; position: absolute; left: 0; top: .6rem; bottom: .6rem; width: 3px; border-radius: 3px; background: linear-gradient(#8b5cf6, #22d3ee); }
+        .player-link:hover { background: #8b5cf610; }
+        .player-link:hover .player-chevron { color: var(--secondary); transform: translateX(3px); }
+        .player-chevron { transition: transform .2s, color .2s; }
+        .player-avatar { width: 2.9rem; height: 2.9rem; flex-shrink: 0; border-radius: .85rem; box-shadow: 0 0 0 2px #0e1220, 0 0 0 3px #8b5cf666; background: linear-gradient(145deg, #2a2468, #151a38); }
+        .gear-card { transition: transform .2s, box-shadow .25s; }
+        .gear-card:hover { transform: translateY(-4px); box-shadow: 0 1.4rem 2.4rem -1.4rem #6366f1; }
+        .profile-avatar { box-shadow: 0 0 0 3px #0a0e1d, 0 0 0 5px #8b5cf6, 0 1.2rem 2.4rem -.6rem #6366f1aa; }
+        .section-title { display: flex; align-items: center; gap: .7rem; color: #fff; font-family: 'Chakra Petch', 'IBM Plex Sans Thai', sans-serif; font-weight: 700; font-size: 1.6rem; }
+        .section-title::before { content: ""; width: .3rem; height: 1.4rem; border-radius: 3px; background: var(--grad); }
+        #teamGrid > * { min-width: 0; } /* keep long names from widening the grid on phones */
+        ::-webkit-scrollbar { width: 8px; height: 8px; } ::-webkit-scrollbar-track { background: var(--ink); }
+        ::-webkit-scrollbar-thumb { background: #2a3355; border-radius: 9999px; } ::-webkit-scrollbar-thumb:hover { background: #3a4575; }
+    </style>
+    {% block head %}{% endblock %}
+</head>
+<body class="min-h-screen flex flex-col selection:bg-violet-500 selection:text-white">
+    {% set admin = request.path.startswith('/admin') %}
+
+    <header class="sticky top-0 z-50 site-header">
+        <div class="max-w-7xl mx-auto px-5 h-16 flex items-center justify-between gap-4">
+            <a href="/" class="flex items-center gap-3">
+                <span class="brand-mark"><i class="fa-solid fa-bolt"></i></span>
+                <span class="brand-word">E-Sport<b>.</b></span>
+            </a>
+
+            {% if not admin %}
+            <nav lang="en" class="hidden md:flex nav-pill">
+                {% for href, label, icon in [('/', 'Home', 'fa-house'), ('/tournaments', 'Tournaments', 'fa-trophy'), ('/teams', 'Teams & Players', 'fa-users')] %}
+                {% set on = (request.path == '/') if href == '/' else (request.path.startswith(href) or (href == '/teams' and request.path.startswith('/players'))) %}
+                <a href="{{ href }}" class="nav-link {% if on %}nav-current{% endif %}">
+                    <i class="fa-solid {{ icon }} text-sm"></i>{{ label }}
+                </a>
+                {% endfor %}
+            </nav>
+            <a href="/admin" lang="en" aria-label="admin" class="text-sm text-slate-400 hover:text-white flex items-center gap-2 px-3 py-2 rounded-full border border-white/10 hover:border-white/25 transition"><i class="fa-solid fa-gear" aria-hidden="true"></i><span class="hidden sm:inline">admin</span></a>
+            {% else %}
+            <span class="hidden sm:flex text-sm font-semibold text-violet-200 items-center gap-2 px-3 py-1.5 rounded-full bg-violet-400/10 border border-violet-300/20"><i class="fa-solid fa-screwdriver-wrench"></i>โหมดผู้ดูแลระบบ</span>
+            <a href="/" class="btn-ghost px-4 py-2 rounded-lg text-sm font-semibold gap-2"><i class="fa-solid fa-arrow-left"></i>กลับหน้าเว็บ</a>
+            {% endif %}
+        </div>
+
+        {% if admin %}
+        <nav class="border-t border-white/5 overflow-x-auto admin-tabs">
+            <div class="max-w-7xl mx-auto px-5 flex gap-1 py-2 whitespace-nowrap text-sm font-medium">
+                <a href="{{ url_for('user_teams') }}" class="px-4 py-2 rounded-lg flex items-center gap-2 text-cyan-200 hover:bg-cyan-400/10"><i class="fa-solid fa-users text-xs" aria-hidden="true"></i>ดูทีมและอุปกรณ์</a>
+                {% for href, label, icon in [('/admin', 'ภาพรวม', 'fa-gauge'), ('/admin/teams', 'ทีม', 'fa-shield-halved'), ('/admin/players', 'นักแข่ง', 'fa-users'), ('/admin/gear', 'อุปกรณ์', 'fa-headset'), ('/admin/tournaments', 'รายการแข่ง', 'fa-trophy'), ('/admin/matches', 'ผลการแข่ง', 'fa-crosshairs')] %}
+                {% set on = (request.path == '/admin') if href == '/admin' else request.path.startswith(href) %}
+                <a href="{{ href }}" class="px-4 py-2 rounded-lg flex items-center gap-2 {% if on %}nav-current font-semibold{% else %}text-slate-300 hover:bg-white/10{% endif %}"><i class="fa-solid {{ icon }} text-xs"></i>{{ label }}</a>
+                {% endfor %}
+            </div>
+        </nav>
+        {% endif %}
+    </header>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto px-5 py-8 pb-28 md:pb-10">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="mb-6 flex items-center gap-3 px-5 py-4 rounded-xl border border-emerald-400/30 bg-emerald-400/10 text-emerald-300 font-medium">
+            <i class="fa-solid fa-circle-check"></i>{{ messages[0] }}
+        </div>
+        {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </main>
+
+    {% if not admin %}
+    <nav lang="en" class="md:hidden fixed bottom-3 inset-x-3 z-50 glass-panel rounded-2xl grid grid-cols-3 p-1.5 shadow-2xl">
+        {% for href, label, icon in [('/', 'Home', 'fa-house'), ('/tournaments', 'Tournaments', 'fa-trophy'), ('/teams', 'Teams', 'fa-users')] %}
+        {% set on = (request.path == '/') if href == '/' else (request.path.startswith(href) or (href == '/teams' and request.path.startswith('/players'))) %}
+        <a href="{{ href }}" class="py-2.5 rounded-xl flex flex-col items-center gap-1 text-xs font-medium {% if on %}nav-current{% else %}text-slate-400{% endif %}">
+            <i class="fa-solid {{ icon }} text-lg"></i>{{ label }}
+        </a>
+        {% endfor %}
+    </nav>
+    {% endif %}
+
+    <footer class="border-t border-white/5 py-6 text-sm text-slate-500 hidden md:block">
+        <div class="max-w-7xl mx-auto px-5 flex justify-between"><span>© 2026 e-sports by shiryx </span></div>
+    </footer>
+</body>
+</html>
